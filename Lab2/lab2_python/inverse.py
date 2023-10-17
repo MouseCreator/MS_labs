@@ -78,9 +78,11 @@ def mure(a):
     n = a.shape[1]
 
     curr = np.zeros([n, m])
+    i = 0
     if m < n:
         while True:
             prev = curr.copy()
+            i += 1
             curr = multiply(a.T, np.linalg.inv(multiply(a, a.T) + delta * np.identity(m)))
             if check_distance(prev, curr):
                 break
@@ -88,8 +90,10 @@ def mure(a):
     else:
         while True:
             prev = curr.copy()
+            i += 1
             curr = multiply(np.linalg.inv(multiply(a.T, a) + delta * np.identity(n)), a.T)
             if check_distance(prev, curr):
                 break
             delta /= 2
+    print("Steps:", i)
     return curr

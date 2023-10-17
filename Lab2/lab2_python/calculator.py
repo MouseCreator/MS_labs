@@ -50,5 +50,5 @@ def to_test(calc_operator, input_image, output_image):
     y_matrix = to_matrix(output_image)
     result = gr.multiply(calc_operator, x_matrix)
     dist = distance(y_matrix, result)
-    print("Root mean square distance:", dist)
+    print("Distance:", dist)
     return result
