@@ -23,9 +23,11 @@ def calculate_v(n1, n2):
 
 def inverse(x_matrix, method):
     if method == "G":
+        print("Greville")
         return gr.greville(x_matrix)
     elif method == "M":
-        return gr.mure(x_matrix)
+        print("Moore-Penrose")
+        return gr.moore(x_matrix)
     else:
         raise ValueError("Unknown method")
 

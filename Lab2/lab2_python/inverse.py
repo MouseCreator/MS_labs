@@ -72,11 +72,11 @@ def check_distance(m1, m2):
     return distance < 0.000001
 
 
-def mure(a):
+def moore(a):
     delta = 10
     m = a.shape[0]
     n = a.shape[1]
-
+    print("Epsilon: 1e-6")
     curr = np.zeros([n, m])
     i = 0
     if m < n:
