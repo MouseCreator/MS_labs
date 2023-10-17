@@ -1,4 +1,5 @@
 import numpy as np
+import inverse as gr
 
 
 def append_ones(image):
@@ -22,11 +23,9 @@ def calculate_v(n1, n2):
 
 def inverse(x_matrix, method):
     if method == "G":
-        return np.zeros(0)
-        # Grenvile
+        return gr.greville(x_matrix)
     elif method == "M":
-        return np.zeros(1)
-        # Mure
+        return gr.mure(x_matrix)
     else:
         raise ValueError("Unknown method")
 
@@ -37,6 +36,14 @@ def calculate(input_image, output_image, method):
 
     x_inv = inverse(x_matrix, method)
     z = calculate_z(x_matrix, x_inv)
-    v = calculate_v(0, 0)
+    v = calculate_v(y_matrix.shape[0], x_matrix.shape[0])
     a_matrix = np.dot(y_matrix, x_inv) + np.dot(v, z.T)
     return a_matrix
+
+
+def to_test(calc_operator, input_image, output_image):
+    x_matrix = append_ones(input_image)
+    y_matrix = to_matrix(output_image)
+    result = gr.multiply(calc_operator, x_matrix)
+    # find distance y_matrix and result
+    return result
