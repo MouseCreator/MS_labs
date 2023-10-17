@@ -40,8 +40,11 @@ def calculate(input_image, output_image, method):
     a_matrix = np.dot(y_matrix, x_inv) + np.dot(v, z.T)
     return a_matrix
 
+
 def distance(m1, m2):
     return np.sqrt(np.sum((m1 - m2) ** 2))
+
+
 def to_test(calc_operator, input_image, output_image):
     x_matrix = append_ones(input_image)
     y_matrix = to_matrix(output_image)
