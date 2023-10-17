@@ -4,8 +4,8 @@ import numpy as np
 def calculate_first(a0):
     dt = multiply(a0.T, a0)
     if dt == 0:
-        return a0
-    return a0 / dt
+        return np.vstack(a0)
+    return np.vstack(a0 / dt)
 
 
 def calculate_z(a_cur, a_inv):
@@ -36,7 +36,7 @@ def add_col(matrix, a):
 
 def append_to_inverse(inverse_matrix, a, z, denum):
     inverse_new = inverse_matrix - multiply(z, a, a.T, inverse_matrix) / denum
-    row = multiply(z, a)
+    row = multiply(z, a) / denum
     return add_col(inverse_new, row)
 
 
@@ -49,15 +49,15 @@ def append_zero_case(inverse_matrix, a, z):
 
 
 def greville(matrix):
-    eps = 0.000001
-    a0_inv = calculate_first(matrix[0])
-    n = matrix.shape[0]
-    inverse_matrix = np.vstack(a0_inv)
+    eps = 0.001
+    inverse_matrix = calculate_first(matrix[0])
     current_matrix = np.array([matrix[0]])
+    n = matrix.shape[0]
     for i in range(1, n):
         a = matrix[i].reshape(-1, 1)
         z = calculate_z(current_matrix, inverse_matrix)
         current_matrix = add_row(current_matrix, matrix[i])
+
         denum = multiply(a.T, z, a)[0, 0]
         if np.abs(denum) < eps:
             inverse_matrix = append_zero_case(inverse_matrix, a, z)
