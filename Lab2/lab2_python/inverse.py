@@ -69,7 +69,7 @@ def greville(matrix):
 
 def check_distance(m1, m2):
     distance = np.sqrt(np.sum((m1 - m2) ** 2))
-    return distance < 0.000001
+    return distance < 1e-6
 
 
 def moore(a):

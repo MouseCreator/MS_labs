@@ -1,8 +1,8 @@
 import calculator as calc
 import reader as io
 
-input =  io.read_image('images/x2.bmp')
-ouput = io.read_image('images/y5.bmp')
+input =  io.read_image('images/x1.bmp')
+ouput = io.read_image('images/y1.bmp')
 method = "M"
 
 calc_operator = calc.calculate(input, ouput, method)
