@@ -16,7 +16,7 @@ def read(filename):
                 row_data = [float(value) for value in values]
                 data.append(row_data)
 
-            y = np.array(data)
+            y = np.array(data).T
             return y
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
