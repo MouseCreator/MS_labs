@@ -4,7 +4,6 @@ import numpy as np
 
 def create_matrix_and_symbols():
     c1, c2, c3, c4, m1, m2, m3 = sp.symbols('c1 c2 c3 c4 m1 m2 m3')
-
     matrix_a = [
         [0, 1, 0, 0, 0, 0],
         [-(c2 + c1) / m1, 0, c2 / m1, 0, 0, 0],
@@ -13,8 +12,7 @@ def create_matrix_and_symbols():
         [0, 0, 0, 0, 0, 1],
         [0, 0, c3 / m3, 0, -(c4 + c3) / m3, 0]
     ]
-    symbols = [c1, c2, c3, c4, m1, m2, m3]
-    return matrix_a, symbols
+    return sp.Matrix(matrix_a)
 
 
 def calculate_b_matrix(a_matrix, beta, y_vector):
@@ -33,9 +31,9 @@ def put_vals(matrix, y_vector, y_values, row_index):
 
 
 def calculate_u(a_matrix, b_matrix, y_vector, y_values):
-    u_init = 0
-    u_curr = u_init
     n = a_matrix.shape[1]
+    u_init = np.zeros(b_matrix.shape)
+    u_curr = u_init.copy()
     t = sp.symbols('t')
     time = 0
     delta = 0.2
@@ -51,26 +49,7 @@ def calculate_u(a_matrix, b_matrix, y_vector, y_values):
         k4_t = np.array(k4.subs({t: time + delta}))
         time += delta
         u_curr = u_curr + delta / 6 * (k1_t + k2_t + k3_t + k4_t)
-
-
-def runge_kutta(a_matrix, n):
-    t_values = [0]
-    y_values = [0]
-    h = 0.2
-    t_current = 0
-    for i in range(n):
-        k1 = h * np.dot(a_matrix(t_current), y_values[-1])
-        k2 = h * np.dot(a_matrix(t_current + 0.5 * h), (y_values[-1] + 0.5 * k1))
-        k3 = h * np.dot(a_matrix(t_current + 0.5 * h), (y_values[-1] + 0.5 * k2))
-        k4 = h * np.dot(a_matrix(t_current + h), (y_values[-1] + k3))
-
-        y_next = y_values[-1] + (1 / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
-        t_current += h
-
-        t_values.append(t_current)
-        y_values.append(y_next)
-
-    return t_values, y_values
+    return u_curr
 
 
 def to_vector(matrix, row):
@@ -90,3 +69,38 @@ def integrate_sq_deviation(y_matrix, y_approximation):
         partial = np.dot(vector_difference, vector_difference)
         integral_sum += partial
     return integral_sum * delta_t
+
+
+def integrate_delta_b(y_matrix, y_approximation, u_matrix):
+    delta_t = 0.2
+    n = y_matrix.shape[1]
+    u_sq = 0
+    t = sp.symbols('t')
+    time = 0
+    vect = np.zeros(n)
+    for i in range(n):
+        u_sub = np.array(u_matrix.subs(t, time))
+        partial = np.dot(u_sub.T, u_sub)
+        u_sq += partial
+
+        vector_difference = to_vector(y_matrix, i) - to_vector(y_approximation, i)
+        vect += np.dot(u_sub.T, vector_difference)
+
+        time += delta_t
+    u_sq_inv = np.linalg.inv(u_sq)
+    return np.dot(u_sq_inv, vect)
+
+
+def calculate(y_matrix, params, beta, beta_init, eps):
+    y_vector = sp.symbols('y1 y2 y3 y4 y5 y6')
+    a_matrix = create_matrix_and_symbols()
+    a_matrix = a_matrix.subs(params)
+    y_approximation = a_matrix.subs(beta_init)
+    b_matrix = calculate_b_matrix(a_matrix, beta, y_vector)
+    while True:
+        u_matrix = calculate_u(a_matrix, b_matrix, y_vector, y_matrix)
+        delta_b = integrate_delta_b(y_matrix, y_approximation, u_matrix)
+        if integrate_sq_deviation(y_matrix, y_approximation) < eps:
+            return y_approximation
+
+
