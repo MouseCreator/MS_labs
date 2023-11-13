@@ -1,5 +1,5 @@
 from io_reader import read
-from approximation import calculate
+from fixed1 import calculate
 
 import sympy as sp
 

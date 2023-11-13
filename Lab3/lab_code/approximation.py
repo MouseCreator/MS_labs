@@ -181,19 +181,17 @@ def calculate(y_matrix, params, beta, beta_init, eps):
     a_matrix = create_matrix_and_symbols()
     a_filled = a_matrix.subs(params)
     y_vector = sp.symbols('y1 y2 y3 y4 y5 y6')
-    i = 0
     b_matrix = calculate_b_matrix(a_filled, beta, y_vector)
     while True:
         a_temp = np.array(a_filled.subs(beta_init))
         u_map = calculate_u(a_temp, b_matrix, y_matrix, y_vector)
         delta_b = integrate_delta_b(y_matrix, a_temp, u_map)
         beta_init = update_beta(beta_init, delta_b)
-        i += 1
-        if i > 10:  # integrate_sq_deviation(y_matrix, a_filled) < eps:
+        if integrate_sq_deviation(y_matrix, a_filled) < eps:
             return beta_init
 
 
-mtx_input = read('../input\\y10.txt')
+mtx_input = read('input/y10.txt')
 
 c1, c2, c3, c4, m1, m2, m3 = sp.symbols('c1 c2 c3 c4 m1 m2 m3')
 approximated = single_calculator(mtx_input, {m1: 12, m2: 28, m3: 18, c4: 0.12},
